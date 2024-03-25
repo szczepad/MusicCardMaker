@@ -8,13 +8,17 @@ import (
 	"github.com/szczepad/MusicCardMaker/spotify"
 )
 
-const spotifyAuthURL = "https://accounts.spotify.com"
+const (
+	spotifyAuthURL = "https://accounts.spotify.com"
+	spotifyApiURL  = "https://api.spotify.com"
+)
 
 func main() {
 	config := config.CreateConfig()
 
 	client := spotify.NewSpotifyClient(
 		spotifyAuthURL,
+		spotifyApiURL,
 		config.Spotify.ClientID,
 		config.Spotify.ClientSecret,
 	)

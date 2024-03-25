@@ -1,0 +1,23 @@
+{
+  "tracks": {
+    "items": [
+      {
+        "track": {
+          "album": {
+            "release_date": "2023-05-26"
+          },
+          "artists": [
+            {
+              "name": "Emei"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/60SugyNV4FdewZfktXfXte"
+          },
+          "name": "Irresponsible"
+        }
+      }
+    ],
+    "next": null
+  }
+}
