@@ -44,3 +44,8 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.57
+
+      - name: Create git tag
+        run: |
+          git tag v${{ env.GitVersion_SemVer }}
+          git push origin v${{ env.GitVersion_SemVer }}
