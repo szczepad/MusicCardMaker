@@ -9,7 +9,7 @@ import (
 	"github.com/skip2/go-qrcode"
 )
 
-func CreatePDF(tracks []Track) {
+func CreatePDF(tracks []Track) error {
 	pdf := fpdf.New("P", "mm", "A4", "")
 
 	pdf.SetFont("Helvetica", "B", 16)
@@ -39,6 +39,7 @@ func CreatePDF(tracks []Track) {
 		qr, err := qrcode.New(track.Url, qrcode.High)
 		if err != nil {
 			slog.Error("Could not create QR-Code", "Error", err)
+			return err
 		}
 		qr.ForegroundColor = color.RGBA{R: 39, G: 154, B: 241, A: 250}
 		qr.BackgroundColor = color.RGBA{R: 52, G: 49, B: 45, A: 250}
@@ -46,6 +47,7 @@ func CreatePDF(tracks []Track) {
 		qrPng, err := qr.PNG(256)
 		if err != nil {
 			slog.Error("Could not create QR-Code", "Error", err)
+			return err
 		}
 
 		reader := bytes.NewReader(qrPng)
@@ -66,5 +68,7 @@ func CreatePDF(tracks []Track) {
 	err := pdf.OutputFileAndClose("output.pdf")
 	if err != nil {
 		slog.Error("Could not create PDF", "Error", err)
+		return err
 	}
+	return nil
 }

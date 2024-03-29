@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"os"
 
 	"github.com/szczepad/MusicCardMaker/config"
 	"github.com/szczepad/MusicCardMaker/spotify"
@@ -26,8 +27,17 @@ func main() {
 	token, err := client.Authenticate()
 	if err != nil {
 		slog.Error("Could not authenticate to Spotify", "Error", err)
+		os.Exit(1)
 	}
 	tracks, err := client.GetTracksFromPlaylist(token, playlistID)
+	if err != nil {
+		slog.Error("Could not get Tracks from Playlist", "Error", err)
+		os.Exit(1)
+	}
 
-	spotify.CreatePDF(tracks)
+	err = spotify.CreatePDF(tracks)
+	if err != nil {
+		slog.Error("Could not create PDF for Tracks", "Error", err)
+		os.Exit(1)
+	}
 }

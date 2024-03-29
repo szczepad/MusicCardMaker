@@ -79,6 +79,10 @@ func (c *SpotifyClient) Authenticate() (string, error) {
 		c.authURL+tokenPath,
 		strings.NewReader(data.Encode()),
 	)
+	if err != nil {
+		slog.Error("Could not create Request.", "Error", err)
+		return "", err
+	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.SetBasicAuth(c.clientID, c.clientSecret)
 

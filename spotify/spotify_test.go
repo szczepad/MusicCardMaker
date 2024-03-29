@@ -24,7 +24,10 @@ func TestAuthentication(t *testing.T) {
 					if user == "testID" && password == "testSecret" {
 						w.WriteHeader(200)
 						payload := AuthResponse{"token", "Bearer", 1234}
-						json.NewEncoder(w).Encode(payload)
+						err := json.NewEncoder(w).Encode(payload)
+						if err != nil {
+							w.WriteHeader(500)
+						}
 					} else {
 						w.WriteHeader(401)
 					}
@@ -59,7 +62,11 @@ func TestGetTracksFromPlaylist(t *testing.T) {
 				w.WriteHeader(500)
 				return
 			}
-			w.Write(file)
+			_, err = w.Write(file)
+			if err != nil {
+				w.WriteHeader(500)
+				return
+			}
 			return
 		}
 	}))
