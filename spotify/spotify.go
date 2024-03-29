@@ -114,7 +114,7 @@ func (c *SpotifyClient) GetTracksFromPlaylist(
 
 	req, err := http.NewRequest(
 		http.MethodGet,
-		c.apiURL+"/api/v1/playlists/"+playlistID+"/tracks",
+		c.apiURL+"/v1/playlists/"+playlistID+"/tracks",
 		nil,
 	)
 	if err != nil {

@@ -49,7 +49,7 @@ func TestAuthentication(t *testing.T) {
 func TestGetTracksFromPlaylist(t *testing.T) {
 	playlistID := "1"
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/api/v1/playlists/"+playlistID+"/tracks" {
+		if r.URL.Path == "/v1/playlists/"+playlistID+"/tracks" {
 			if r.Header.Get("Authorization") != "Bearer ValidToken" {
 				w.WriteHeader(401)
 				return
