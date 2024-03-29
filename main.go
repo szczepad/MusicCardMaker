@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/szczepad/MusicCardMaker/config"
@@ -14,6 +13,7 @@ const (
 )
 
 func main() {
+	playlistID := "0tarwRmyLGjw3QlMq4GNhn?si=899e9723d2fb483f" // TODO: Make this configurable via command line
 	config := config.CreateConfig()
 
 	client := spotify.NewSpotifyClient(
@@ -27,5 +27,7 @@ func main() {
 	if err != nil {
 		slog.Error("Could not authenticate to Spotify", "Error", err)
 	}
-	fmt.Println(token)
+	tracks, err := client.GetTracksFromPlaylist(token, playlistID)
+
+	spotify.CreatePDF(tracks)
 }
