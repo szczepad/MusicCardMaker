@@ -149,20 +149,25 @@ func (c *SpotifyClient) GetTracksFromPlaylist(
 	for _, item := range trackResponse.Tracks.Items {
 		releaseYear, _, found := strings.Cut(item.Track.Album.ReleaseDate, "-")
 		if !found {
-			slog.Error(
-				"Could not get ReleaseYear for Track",
-				"ReleaseDate",
-				item.Track.Album.ReleaseDate,
-			)
-		} else {
-			track := Track{
-				Artist:      item.Track.Artists[0].Name,
-				Name:        item.Track.Name,
-				Url:         item.Track.ExternalURLs.Spotify,
-				ReleaseYear: releaseYear,
+			if len(item.Track.Album.ReleaseDate) != 4 {
+				slog.Error(
+					"Could not get ReleaseYear for Track",
+					"ReleaseDate",
+					item.Track.Album.ReleaseDate,
+				)
+			} else {
+				releaseYear = item.Track.Album.ReleaseDate
 			}
-			result = append(result, track)
 		}
+
+		track := Track{
+			Artist:      item.Track.Artists[0].Name,
+			Name:        item.Track.Name,
+			Url:         item.Track.ExternalURLs.Spotify,
+			ReleaseYear: releaseYear,
+		}
+		result = append(result, track)
+
 	}
 	return result, nil
 }
