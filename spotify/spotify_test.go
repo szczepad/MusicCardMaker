@@ -77,34 +77,61 @@ func TestGetTracksFromPlaylist(t *testing.T) {
 	}))
 	spotifyClient := NewSpotifyClient("", testServer.URL, "testID", "testSecret")
 
-	t.Run("Gets Tracks from an existing Playlist", func(t *testing.T) {
-		wantTracks := []Track{
-			{
-				Artist:      "Emei",
-				Name:        "Irresponsible",
-				Url:         "https://open.spotify.com/track/60SugyNV4FdewZfktXfXte",
-				ReleaseYear: "2023",
+	tests := []struct {
+		name       string
+		input      string
+		wantTracks []Track
+	}{
+		{
+			name:  "Gets Tracks from an existing Playlist",
+			input: "singleTrackPlaylist", wantTracks: []Track{
+				{
+					Artist:      "Emei",
+					Name:        "Irresponsible",
+					Url:         "https://open.spotify.com/track/60SugyNV4FdewZfktXfXte",
+					ReleaseYear: "2023",
+				},
 			},
-		}
-		token := "ValidToken"
+		},
+		{
+			name:  "Handles cases correctly in which only the releaseYear is provided",
+			input: "noReleaseMonthOrDay",
+			wantTracks: []Track{
+				{
+					Artist:      "Aerosmith",
+					Name:        "I Don't Want to Miss a Thing",
+					Url:         "https://open.spotify.com/intl-de/track/225xvV8r1yKMHErSWivnow?si=b10585f9d2bf4225",
+					ReleaseYear: "1998",
+				},
+			},
+		},
+	}
 
-		gotTracks, err := spotifyClient.GetTracksFromPlaylist(token, "singleTrackPlaylist")
-		if err != nil {
-			t.Errorf("Could not get Tracks from Playlist. Error: %v", err)
-		}
-		if len(gotTracks) != len(wantTracks) {
-			t.Errorf(
-				"Did not get correct number of Tracks. Got: %d, Want: %d",
-				len(gotTracks),
-				len(wantTracks),
-			)
-		}
-		for i, track := range gotTracks {
-			if track != wantTracks[i] {
-				t.Errorf("Did not get expected Track. Got: %v, Want: %v", track, wantTracks[i])
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			token := "ValidToken"
+			gotTracks, err := spotifyClient.GetTracksFromPlaylist(token, tc.input)
+			if err != nil {
+				t.Errorf("Could not get Tracks from Playlist. Error: %v", err)
 			}
-		}
-	})
+			if len(gotTracks) != len(tc.wantTracks) {
+				t.Errorf(
+					"Did not get correct number of Tracks. Got: %d, Want: %d",
+					len(gotTracks),
+					len(tc.wantTracks),
+				)
+			}
+			for i, track := range gotTracks {
+				if track != tc.wantTracks[i] {
+					t.Errorf(
+						"Did not get expected Track. Got: %v, Want: %v",
+						track,
+						tc.wantTracks[i],
+					)
+				}
+			}
+		})
+	}
 
 	t.Run("Returns an Error if the User is unauthenticated", func(t *testing.T) {
 		token := "InvalidToken"
@@ -112,36 +139,6 @@ func TestGetTracksFromPlaylist(t *testing.T) {
 		_, err := spotifyClient.GetTracksFromPlaylist(token, "singleTrackPlaylist")
 		if err == nil {
 			t.Errorf("Got no error although one was expected.")
-		}
-	})
-
-	t.Run("Handles cases correctly in which only the releaseYear is provided", func(t *testing.T) {
-		wantTracks := []Track{
-			{
-				Artist:      "Aerosmith",
-				Name:        "I Don't Want to Miss a Thing",
-				Url:         "https://open.spotify.com/intl-de/track/225xvV8r1yKMHErSWivnow?si=b10585f9d2bf4225",
-				ReleaseYear: "1998",
-			},
-		}
-		token := "ValidToken"
-
-		gotTracks, err := spotifyClient.GetTracksFromPlaylist(token, "noReleaseMonthOrDay")
-		if err != nil {
-			t.Errorf("Could not get Tracks from Playlist. Error: %v", err)
-		}
-
-		if len(gotTracks) != len(wantTracks) {
-			t.Errorf(
-				"Did not get correct number of Tracks. Got: %d, Want: %d",
-				len(gotTracks),
-				len(wantTracks),
-			)
-		}
-		for i, track := range gotTracks {
-			if track != wantTracks[i] {
-				t.Errorf("Did not get expected Track. Got: %v, Want: %v", track, wantTracks[i])
-			}
 		}
 	})
 }
