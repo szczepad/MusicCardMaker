@@ -12,6 +12,7 @@ import (
 func CreatePDF(tracks []Track) error {
 	pdf := fpdf.New("P", "mm", "A4", "")
 
+	tr := pdf.UnicodeTranslatorFromDescriptor("")
 	pdf.SetFont("Helvetica", "B", 16)
 	pdf.SetFillColor(52, 49, 45)
 	pdf.SetTextColor(39, 154, 241)
@@ -25,9 +26,9 @@ func CreatePDF(tracks []Track) error {
 		pdf.Rect(5, float64((i%4)*70)+5, 65, 65, "FD")
 		pdf.SetFontSize(13)
 		pdf.SetXY(5, float64((i%4)*70))
-		pdf.MultiCell(65, 20, track.Artist, "", "C", false)
+		pdf.MultiCell(65, 20, tr(track.Artist), "", "C", false)
 		pdf.SetXY(5, float64((i%4)*70+55))
-		pdf.MultiCell(65, 10, track.Name, "", "C", false)
+		pdf.MultiCell(65, 10, tr(track.Name), "", "C", false)
 
 		pdf.SetFontSize(32)
 		pdf.SetXY(5, float64((i%4)*70+30))
