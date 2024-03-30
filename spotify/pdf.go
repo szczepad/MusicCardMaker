@@ -25,10 +25,16 @@ func CreatePDF(tracks []Track) error {
 		// Track Information
 		pdf.Rect(5, float64((i%4)*70)+5, 65, 65, "FD")
 		pdf.SetFontSize(13)
-		pdf.SetXY(5, float64((i%4)*70))
-		pdf.MultiCell(65, 20, tr(track.Artist), "", "C", false)
+		pdf.SetXY(5, float64((i%4)*70+10))
+		pdf.MultiCell(65, 5, tr(track.Artist), "", "C", false)
+
+		if len(track.Name) > 32 {
+			pdf.SetFontSize(10)
+		} else {
+			pdf.SetFontSize(13)
+		}
 		pdf.SetXY(5, float64((i%4)*70+55))
-		pdf.MultiCell(65, 10, tr(track.Name), "", "C", false)
+		pdf.MultiCell(65, 5, tr(track.Name), "", "C", false)
 
 		pdf.SetFontSize(32)
 		pdf.SetXY(5, float64((i%4)*70+30))
