@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -14,8 +16,29 @@ const (
 )
 
 func main() {
-	playlistID := "0tarwRmyLGjw3QlMq4GNhn?si=899e9723d2fb483f" // TODO: Make this configurable via command line
+	//:= "0tarwRmyLGjw3QlMq4GNhn?si=899e9723d2fb483f" // TODO: Make this configurable via command line
 	config := config.CreateConfig()
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, " %s [options] <Spotify playlist or album link>\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nExample:\n")
+		fmt.Fprintf(
+			os.Stderr,
+			" %s https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M\n",
+			os.Args[0],
+		)
+	}
+
+	flag.Parse()
+
+	if flag.NArg() < 1 {
+		slog.Error("Error: A Spotify playlist or album link is required")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	playlistID := flag.Arg(0)
 
 	client := spotify.NewSpotifyClient(
 		spotifyAuthURL,
