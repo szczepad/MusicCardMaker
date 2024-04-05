@@ -27,7 +27,8 @@ type AuthResponse struct {
 }
 
 type TrackResponse struct {
-	Tracks TrackItems `json:"tracks"`
+	Tracks  TrackItems `json:"tracks"`
+	NextURL string     `json:"next"`
 }
 
 type TrackItems struct {
@@ -112,13 +113,19 @@ func (c *SpotifyClient) Authenticate() (string, error) {
 func (c *SpotifyClient) GetTracksFromPlaylist(
 	accessToken, playlistID string,
 ) ([]Track, error) {
+	url := c.apiURL + "/v1/playlists/" + playlistID + "/tracks"
+
+	return c.getTracksFromURL(accessToken, url)
+}
+
+func (c *SpotifyClient) getTracksFromURL(accessToken, url string) ([]Track, error) {
 	result := []Track{}
 
 	client := &http.Client{}
 
 	req, err := http.NewRequest(
 		http.MethodGet,
-		c.apiURL+"/v1/playlists/"+playlistID+"/tracks",
+		url,
 		nil,
 	)
 	if err != nil {
@@ -167,7 +174,15 @@ func (c *SpotifyClient) GetTracksFromPlaylist(
 			ReleaseYear: releaseYear,
 		}
 		result = append(result, track)
+	}
 
+	if trackResponse.NextURL != "" {
+		nextTracks, err := c.getTracksFromURL(accessToken, trackResponse.NextURL)
+		if err != nil {
+			slog.Error("Could not get full Playlist", "Error", err)
+			return result, err
+		}
+		result = append(result, nextTracks...)
 	}
 	return result, nil
 }
